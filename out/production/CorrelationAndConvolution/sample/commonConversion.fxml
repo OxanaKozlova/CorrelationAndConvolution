@@ -61,6 +61,6 @@
          </children>
       </GridPane>
       <Button layoutX="59.0" layoutY="661.0" mnemonicParsing="false" onAction="#changeScene" text="TO FFT" />
-      <Label fx:id="operations" layoutX="151.0" layoutY="665.0" prefHeight="17.0" prefWidth="71.0" text="Operations:" />
+      <Label fx:id="operations" layoutX="151.0" layoutY="665.0" prefHeight="17.0" prefWidth="150.0" text="Operations:" />
    </children>
 </AnchorPane>

@@ -9,6 +9,9 @@ import java.util.ArrayList;
  */
 public class Translation {
     private int N = 16;
+    private int countOperationFFT = 0;
+    private int countOperationTranslation = 0;
+    int t = 0;
 
 
 
@@ -31,9 +34,10 @@ public class Translation {
         ArrayList<Double> arrayCoeff = new ArrayList<>();
         Double coeff = 0.0;
         for(int m = 0; m < N; m++){
-            for(int i = 0; i<N; i++){
+            for(int i = 0; i < N; i++){
                 coeff += getFirstFunction(i) * getSecondFunction(m + i * sing);
                 coeff = new BigDecimal(coeff).setScale(2, RoundingMode.UP).doubleValue();
+                countOperationTranslation++;
             }
             coeff = coeff/this.N;
             coeff = new BigDecimal(coeff).setScale(2, RoundingMode.UP).doubleValue();
@@ -45,7 +49,7 @@ public class Translation {
     public ArrayList<Complex> getComplexFirstFunction(){
         ArrayList<Complex> array = new ArrayList<>();
         for(int i = 0; i < N; i++){
-            array.add(new Complex(Math.sin(2*Math.PI*i/16),0));
+            array.add(new Complex(Math.cos(2*Math.PI*i/16),0));
         }
         return array ;
     }
@@ -53,7 +57,7 @@ public class Translation {
     public ArrayList<Complex> getComplexSecondFunction(){
         ArrayList<Complex> array = new ArrayList<>();
         for(int i = 0; i<16; i++){
-            array.add(new Complex(Math.cos(2*Math.PI*i/16),0));
+            array.add(new Complex(Math.sin(2*Math.PI*i/16),0));
         }
         return array ;
     }
@@ -62,15 +66,19 @@ public class Translation {
         ArrayList<Complex> arrayCoeff = new ArrayList<>();
         ArrayList<Complex> firstFFT = fft(getComplexFirstFunction(), 1);
         ArrayList<Complex> secondFFT = fft(getComplexSecondFunction(),1);
-        Complex coeff = new Complex(0,0);
+        for(int i = 0; i< N; i++){
+            firstFFT.set(i,firstFFT.get(i).divides(new Complex(16, 0)));
+            secondFFT.set(i, secondFFT.get(i).divides(new Complex(16,0)));
+        }
+        Complex coeff ;
         for(int i = 0; i < N; i++){
-            coeff = coeff.plus(firstFFT.get(i).times(secondFFT.get(i)));
-            coeff = coeff.divides(new Complex(16,0));
+            coeff = firstFFT.get(i).times(secondFFT.get(i));
             arrayCoeff.add(coeff);
+            countOperationFFT++;
         }
         ArrayList<Complex> reverseFFT = fft(arrayCoeff, -1);
         for(int i = 0; i < N; i++){
-            reverseFFT.set(i, reverseFFT.get(i).divides(new Complex(16,0)));
+            reverseFFT.set(i, reverseFFT.get(i));
         }
         return reverseFFT;
     }
@@ -80,17 +88,20 @@ public class Translation {
         ArrayList<Complex> arrayCoeff = new ArrayList<>();
         ArrayList<Complex> firstFFT = fft(getComplexFirstFunction(), 1);
         ArrayList<Complex> secondFFT = fft(getComplexSecondFunction(),1);
-        Complex coeff = new Complex(0,0);
+        for(int i = 0; i< N; i++){
+            firstFFT.set(i,firstFFT.get(i).divides(new Complex(16, 0)));
+            secondFFT.set(i, secondFFT.get(i).divides(new Complex(16,0)));
+        }
+        Complex coeff ;
         Complex conjugate;
         for(int i = 0; i < N; i++){
-            conjugate = secondFFT.get(i).conjugate();
-            coeff = coeff.plus(firstFFT.get(i).times(conjugate));
-            coeff = coeff.divides(new Complex(16,0));
+            conjugate = firstFFT.get(i).conjugate();
+            coeff = secondFFT.get(i).times(conjugate);
             arrayCoeff.add(coeff);
         }
         ArrayList<Complex> reverseFFT = fft(arrayCoeff, -1);
         for(int i = 0; i < N; i++){
-            reverseFFT.set(i, reverseFFT.get(i).divides(new Complex(N,0)));
+            reverseFFT.set(i, reverseFFT.get(i));
         }
         return reverseFFT;
     }
@@ -121,12 +132,15 @@ public class Translation {
             Complex tempValue = new Complex (bodd.get(i).times(w).re(), bodd.get(i).times(w).im());
             result.set(i,beven.get(i).plus(tempValue));
             result.set((i+n/2), beven.get(i).minus(tempValue));
-
             w = w.times(wn);
-
-
         }
         return result;
     }
+    public int getCountOperationFFT(){
+        return this.countOperationFFT;
+    }
 
+    public int getCountOperationTranslation(){
+        return this.countOperationTranslation;
+    }
 }

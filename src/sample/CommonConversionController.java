@@ -8,11 +8,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 
 
 /**
@@ -30,6 +32,9 @@ public class CommonConversionController {
 
     @FXML
     public LineChart correlation;
+
+    @FXML
+    public Label operations;
 
     public  void initialize() {
         Translation commonConversion = new Translation();
@@ -61,24 +66,27 @@ public class CommonConversionController {
         convolution.getYAxis().setAutoRanging(true);
         XYChart.Series seriesConvolution = new XYChart.Series<>();
         seriesConvolution.setName("Convolution");
+        ArrayList<Double> transformedArray = commonConversion.getTransformation(-1);
+
         for(Integer i=0; i<16; i++){
             Double temp = 2*Math.PI/(16)*i;
             temp = new BigDecimal(temp).setScale(2, RoundingMode.UP).doubleValue();
 
-            seriesConvolution.getData().add(new XYChart.Data<>(temp.toString(), commonConversion.getTransformation(-1).get(i)));
+            seriesConvolution.getData().add(new XYChart.Data<>(temp.toString(), transformedArray.get(i)));
         }
         convolution.getData().add(seriesConvolution);
-
+        operations.setText(operations.getText() + " " + commonConversion.getCountOperationTranslation());
 
         correlation.getXAxis().setAutoRanging(true);
         correlation.getYAxis().setAutoRanging(true);
         XYChart.Series seriesCorrelation = new XYChart.Series<>();
         seriesCorrelation.setName("Correlation");
+        transformedArray = commonConversion.getTransformation(1);
         for(Integer i=0; i<16; i++){
             Double temp = 2*Math.PI/(16)*i;
             temp = new BigDecimal(temp).setScale(2, RoundingMode.UP).doubleValue();
 
-            seriesCorrelation.getData().add(new XYChart.Data<>(temp.toString(), commonConversion.getTransformation(1).get(i)));
+            seriesCorrelation.getData().add(new XYChart.Data<>(temp.toString(), transformedArray.get(i)));
         }
         correlation.getData().add(seriesCorrelation);
 

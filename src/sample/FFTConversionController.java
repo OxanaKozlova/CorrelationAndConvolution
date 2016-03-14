@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -30,8 +31,13 @@ public class FFTConversionController {
 
     @FXML
     public LineChart correlation;
+
+
+    @FXML
+    public Label operations;
+
     public  void initialize() {
-        Translation commonConversion = new Translation();
+        Translation fftConversion = new Translation();
         firstFunction.getXAxis().setAutoRanging(true);
         firstFunction.getYAxis().setAutoRanging(true);
         XYChart.Series seriesFirstFunction = new XYChart.Series<>();
@@ -41,7 +47,7 @@ public class FFTConversionController {
         for(Integer i=0; i<16; i++){
             Double temp = 2*Math.PI/(16)*i;
             temp = new BigDecimal(temp).setScale(2, RoundingMode.UP).doubleValue();
-            seriesFirstFunction.getData().add(new XYChart.Data<>(temp.toString(), commonConversion.getFirstFunction(i)));
+            seriesFirstFunction.getData().add(new XYChart.Data<>(temp.toString(), fftConversion.getFirstFunction(i)));
         }
         firstFunction.getData().add(seriesFirstFunction);
 
@@ -52,7 +58,7 @@ public class FFTConversionController {
         for(Integer i=0; i<16; i++){
             Double temp = 2*Math.PI/(16)*i;
             temp = new BigDecimal(temp).setScale(2, RoundingMode.UP).doubleValue();
-            seriesSecondFunction.getData().add(new XYChart.Data<>(temp.toString(), commonConversion.getSecondFunction(i)));
+            seriesSecondFunction.getData().add(new XYChart.Data<>(temp.toString(), fftConversion.getSecondFunction(i)));
         }
         secondFunction.getData().add(seriesSecondFunction);
 
@@ -60,7 +66,7 @@ public class FFTConversionController {
         convolution.getYAxis().setAutoRanging(true);
         XYChart.Series seriesConvolution = new XYChart.Series<>();
         seriesConvolution.setName("Convolution");
-        ArrayList<Complex> convolitionArray = commonConversion.getFFTConvolution();
+        ArrayList<Complex> convolitionArray = fftConversion.getFFTConvolution();
         for(Integer i=0; i<16; i++){
             Double temp = 2*Math.PI/(16)*i;
             temp = new BigDecimal(temp).setScale(2, RoundingMode.UP).doubleValue();
@@ -74,7 +80,7 @@ public class FFTConversionController {
         correlation.getYAxis().setAutoRanging(true);
         XYChart.Series seriesCorrelation = new XYChart.Series<>();
         seriesCorrelation.setName("Correlation");
-        ArrayList<Complex> correlationArray = commonConversion.getFFTCorrelation();
+        ArrayList<Complex> correlationArray = fftConversion.getFFTCorrelation();
         for(Integer i=0; i<16; i++){
             Double temp = 2*Math.PI/(16)*i;
             temp = new BigDecimal(temp).setScale(2, RoundingMode.UP).doubleValue();
@@ -82,6 +88,7 @@ public class FFTConversionController {
             seriesCorrelation.getData().add(new XYChart.Data<>(temp.toString(), correlationArray.get(i).re()));
         }
         correlation.getData().add(seriesCorrelation);
+        operations.setText(operations.getText() + " " +  fftConversion.getCountOperationFFT());
 
 
     }
